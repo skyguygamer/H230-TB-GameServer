@@ -8,9 +8,12 @@
 */
 
 mod player;
+mod session;
 use player::Player;
+use session::PlayerSession;
 
 fn main() {
+    // Creates the Player in the outer scope
     let player = Player::new(1);
 
     println!("--- Player State Test ---");
@@ -27,4 +30,15 @@ fn main() {
         "Player ID as big-endian bytes: {:?}",
         player.get_player_id_big_endian()
     );
+
+    println!("\n--- Session Test ---");
+    {
+        //Borrows the player using &player instead of transferring ownership
+        let session = PlayerSession::new(&player, 100, 0xC0A80101);
+
+        //Pass the session by reference to a function with a lifetime parameter
+        session::display_session(&session);
+    } //Session gets dropped here
+    //This statement below proves that Player is still accessible after the session ends
+    println!("Player ID: {}", player.get_player_id());
 }
